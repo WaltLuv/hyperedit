@@ -4015,6 +4015,141 @@ async function handleRenderMotionGraphic(req, res, sessionId) {
   }
 }
 
+// ============== SPEC KIT VIDEO RENDERING ==============
+
+// Handle Spec Kit video rendering via spec-kit-render.js bridge
+async function handleRenderSpecKitVideo(req, res, sessionId) {
+  const session = getSession(sessionId);
+  if (!session) {
+    res.writeHead(404, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({ error: 'Session not found' }));
+    return;
+  }
+
+  try {
+    const body = await parseBody(req);
+    const { specKitDir, options = {} } = body;
+
+    if (!specKitDir) {
+      res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({ error: 'specKitDir is required' }));
+      return;
+    }
+
+    const jobId = randomUUID();
+    const assetId = randomUUID();
+    const outputPath = join(session.assetsDir, `${assetId}.mp4`);
+    const thumbPath = join(session.assetsDir, `${assetId}_thumb.jpg`);
+
+    console.log(`\n[${jobId}] === RENDER SPEC KIT VIDEO ===`);
+    console.log(`[${jobId}] Spec Kit dir: ${specKitDir}`);
+    console.log(`[${jobId}] Output: ${outputPath}`);
+    console.log(`[${jobId}] Options: ${JSON.stringify(options)}`);
+
+    // Build CLI args for spec-kit-render.js
+    const args = [
+      join(process.cwd(), 'scripts/spec-kit-render.cjs'),
+      specKitDir, outputPath
+    ];
+    if (options.maxPrinciples) args.push('--max-principles', String(options.maxPrinciples));
+    if (options.accentColor) args.push('--accent', options.accentColor);
+    if (options.backgroundColor) args.push('--bg', options.backgroundColor);
+    if (options.title) args.push('--title', options.title);
+    if (options.subtitle) args.push('--subtitle', options.subtitle);
+    if (options.ctaTitle) args.push('--title', options.ctaTitle);
+    if (options.ctaSubtitle) args.push('--subtitle', options.ctaSubtitle);
+
+    // Spawn node process to run spec-kit-render.js
+    const proc = spawn('node', args, { cwd: process.cwd(), stdio: ['pipe', 'pipe', 'pipe'] });
+
+    let stdout = '';
+    let stderr = '';
+
+    proc.stdout.on('data', (data) => {
+      const chunk = data.toString();
+      stdout += chunk;
+      chunk.trim().split('\n').forEach(line => {
+        if (line.trim()) console.log(`[${jobId}] [render] ${line}`);
+      });
+    });
+
+    proc.stderr.on('data', (data) => {
+      const chunk = data.toString();
+      stderr += chunk;
+      chunk.trim().split('\n').forEach(line => {
+        if (line.trim()) console.error(`[${jobId}] [render] ${line}`);
+      });
+    });
+
+    // Promisify the spawn completion
+    const renderResult = await new Promise((resolve, reject) => {
+      proc.on('close', (code) => {
+        if (code === 0) {
+          resolve({ code, stdout, stderr });
+        } else {
+          reject(new Error(`spec-kit-render.js exited with code ${code}: ${stderr.trim()}`));
+        }
+      });
+      proc.on('error', (err) => {
+        reject(new Error(`Failed to start spec-kit-render.js: ${err.message}`));
+      });
+    });
+
+    console.log(`[${jobId}] Spec Kit render complete`);
+
+    // Generate thumbnail with ffmpeg
+    await runFFmpeg([
+      '-y', '-i', outputPath,
+      '-vf', 'scale=160:90:force_original_aspect_ratio=decrease,pad=160:90:(ow-iw)/2:(oh-ih)/2',
+      '-frames:v', '1',
+      thumbPath
+    ], jobId);
+
+    const { stat } = await import('fs/promises');
+    const stats = await stat(outputPath);
+
+    // Create asset entry with aiGenerated: true
+    const asset = {
+      id: assetId,
+      type: 'video',
+      filename: `spec-kit-${Date.now()}.mp4`,
+      path: outputPath,
+      thumbPath: existsSync(thumbPath) ? thumbPath : null,
+      duration: null, // Would need ffprobe to get actual duration
+      size: stats.size,
+      width: null,
+      height: null,
+      createdAt: Date.now(),
+      aiGenerated: true,
+      // Metadata
+      specKitDir,
+      options,
+      jobId,
+    };
+
+    session.assets.set(assetId, asset);
+    saveAssetMetadata(session); // Persist asset metadata to disk
+
+    console.log(`[${jobId}] Spec Kit video asset created: ${assetId}`);
+    console.log(`[${jobId}] === RENDER COMPLETE ===\n`);
+
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({
+      success: true,
+      jobId,
+      assetId,
+      filename: asset.filename,
+      thumbnailUrl: `/session/${sessionId}/assets/${assetId}/thumbnail`,
+      streamUrl: `/session/${sessionId}/assets/${assetId}/stream`,
+    }));
+
+  } catch (error) {
+    console.error(`[${sessionId}] Spec Kit video render error:`, error.message);
+    res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({ error: error.message }));
+  }
+}
+
 // AI-generated animation using Gemini + Remotion
 async function handleGenerateAnimation(req, res, sessionId) {
   const session = getSession(sessionId);
@@ -7928,6 +8063,10 @@ const server = http.createServer(async (req, res) => {
     // Motion graphics rendering (placeholder - creates solid color video for now)
     else if (req.method === 'POST' && action === 'render-motion-graphic') {
       await handleRenderMotionGraphic(req, res, sessionId);
+    }
+    // Spec Kit video rendering (parses Spec Kit markdown, renders via Remotion)
+    else if (req.method === 'POST' && action === 'render-spec-kit-video') {
+      await handleRenderSpecKitVideo(req, res, sessionId);
     }
     // AI-generated custom animation (uses Gemini + Remotion)
     else if (req.method === 'POST' && action === 'generate-animation') {

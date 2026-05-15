@@ -1,6 +1,7 @@
 import React from 'react';
 import { Composition } from 'remotion';
 import { DynamicAnimation } from './DynamicAnimation';
+import { SpecKitVideoGenerator } from './SpecKitVideoGenerator';
 
 // Props passed from the CLI via --props
 export interface DynamicAnimationProps {
@@ -189,6 +190,38 @@ export const RemotionRoot: React.FC = () => {
           return {
             durationInFrames: calculateDuration(props),
           };
+        }}
+      />
+
+      {/* Spec Kit Video Generator — renders Spec Kit packages as animated videos */}
+      <Composition
+        id="SpecKitVideo"
+        component={SpecKitVideoGenerator}
+        durationInFrames={6000}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          scenes: [],
+          accentColor: '#00D4FF',
+          backgroundColor: '#0A0A0F',
+          title: 'AI Agent Workforce',
+          subtitle: 'The Factory Is Open',
+        }}
+        calculateMetadata={({ props }) => {
+          if (!props.scenes || props.scenes.length === 0) {
+            return { durationInFrames: 6000 };
+          }
+          // Find the latest end time across all scenes
+          let maxTimeSec = 0;
+          for (const s of props.scenes) {
+            const parts = (s.startTime as string)?.split(':') || ['0', '0'];
+            const startMin = parseInt(parts[0], 10) || 0;
+            const startSec = parseInt(parts[1], 10) || 0;
+            const endTime = startMin * 60 + startSec + (s.duration || 0);
+            if (endTime > maxTimeSec) maxTimeSec = endTime;
+          }
+          return { durationInFrames: Math.ceil(maxTimeSec * 30) + 90 }; // +3s buffer
         }}
       />
     </>

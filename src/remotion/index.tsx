@@ -8,4 +8,5 @@ registerRoot(RemotionRoot);
 // Re-export for use in the React app
 export { RemotionRoot } from './Root';
 export { DynamicAnimation } from './DynamicAnimation';
+export { SpecKitComposite } from './SpecKitComposite';
 export type { Scene, DynamicAnimationProps } from './Root';

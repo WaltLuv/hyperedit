@@ -73,6 +73,7 @@ Key endpoints on `localhost:3333`:
 - `POST /session/{id}/transcribe` - Whisper transcription for captions
 - `POST /session/{id}/render` - Render final video
 - `POST /session/{id}/render-motion-graphic` - Render Remotion animation
+- `POST /session/{id}/render-spec-kit-video` - Render Spec Kit constitution/agents/workflows as Remotion video
 - `POST /session/{id}/generate-animation` - AI-generated Remotion code (Gemini writes JSX → Remotion CLI renders)
 - `POST /session/{id}/edit-animation` - Modify existing Remotion source in-place (same asset ID reused after re-render)
 - `POST /session/{id}/process-asset` - Apply FFmpeg command to a specific asset (replaces in-place)
@@ -86,7 +87,35 @@ Key endpoints on `localhost:3333`:
 
 Sessions persist to `/tmp/hyperedit-ffmpeg/sessions/{sessionId}/` with assets, renders, project.json, and assets-meta.json (stores `aiGenerated`, `duration`, `editCount`).
 
-## TypeScript Configuration
+## Spec Kit Video Rendering
+
+Converts Spec Kit markdown packages (constitution, agent definitions, workflows) into fully rendered 1080p videos using Remotion.
+
+**Endpoint**: `POST /session/{id}/render-spec-kit-video`
+
+**Handler**: `handleRenderSpecKitVideo()` in `scripts/local-ffmpeg-server.js` (line ~4030)
+
+**Request body**:
+```json
+{
+  "specKitDir": "/absolute/path/to/spec-kit-package",
+  "options": {
+    "maxPrinciples": 14,
+    "accentColor": "#3b82f6",
+    "backgroundColor": "#0f172a",
+    "title": "Custom Title",
+    "subtitle": "Custom Subtitle",
+    "ctaTitle": "CTA Title",
+    "ctaSubtitle": "CTA Subtitle"
+  }
+}
+```
+
+**CLI entry point**: `scripts/spec-kit-render.cjs` — standalone parser + Remotion render. Parses constitution/agent/workflow markdown, generates director commands, writes props JSON, invokes `npx remotion render src/remotion/index.tsx SpecKitVideo`.
+
+**Remotion component**: `SpecKitVideoGenerator` registered in `Root.tsx` as `id="SpecKitVideo"`.
+
+**Pipeline**: HTTP handler → spawns `node scripts/spec-kit-render.cjs` → Remotion renders 5550-frame video → FFmpeg generates thumbnail → saved as `aiGenerated: true` asset in session library.
 
 Three separate tsconfig files:
 - `tsconfig.app.json` - React app (ES2020, strict)
