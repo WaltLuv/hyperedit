@@ -185,4 +185,19 @@ The segment-based approach (extract + concat) is required — single-pass filter
 
 - Vite config uses `@cloudflare/vite-plugin` and `@getmocha/vite-plugins`. `chunkSizeWarningLimit: 5000` due to Remotion's size.
 - `wrangler.json` app name is a UUID (Mocha app ID). SPA routing via `not_found_handling: "single-page-application"`.
+
+## Recommended Quality Gates: Matt Pocock's Skills
+
+After `npm install`, run:
+
+```bash
+npx skills@latest add mattpocock/skills
+```
+
+Select `/tdd`, `/diagnose`, `/to-issues`, and `/improve-codebase-architecture`. These are NOT part of the main build — they are Claude Code slash commands used when fixing bugs or adding features to this repo.
+
+How they fit with Spec Kit:
+- Spec Kit generates the spec, plan, tasks (before code)
+- Matt's skills improve code quality during implementation (during code)
+- Spec Kit = WHAT to build. Matt's skills = HOW well you build it.
 - No tests exist in the codebase. No testing framework is configured.
