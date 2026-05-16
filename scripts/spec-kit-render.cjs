@@ -18,6 +18,20 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+/**
+ * Read a markdown file and strip line-number prefixes that some templates ship with.
+ * Converts lines like "   1|  Some content" or "123|  * bullet" to clean content.
+ */
+function readMarkdown(filePath) {
+  const raw = fs.readFileSync(filePath, "utf-8");
+  return raw
+    .split("\n")
+    .map((line) => line.replace(/^\s*\d+\|\s*/, ""))
+    .join("\n");
+}
+
 // ─── Parsers (same as spec-kit-to-hyperedit.cjs) ─────────────────────────────
 
 function parseConstitution(markdown) {
@@ -136,20 +150,31 @@ function parseSpecKitPackage(packageDir) {
         }
       }
       if (file === "constitution") {
+        // Try constitution dir first, then fall back to docs/
         const constPath = path.join(fullPath, "constitution.md");
         if (fs.existsSync(constPath)) {
-          result.constitution = parseConstitution(fs.readFileSync(constPath, "utf-8"));
+          result.constitution = parseConstitution(readMarkdown(constPath));
+        } else {
+          // Fallback: check docs/ directory for constitution files
+          const docsDir = path.join(path.dirname(packageDir), "docs");
+          for (const candidate of ["constitution.md", "constitution-detailed.md"]) {
+            const docsPath = path.join(docsDir, candidate);
+            if (fs.existsSync(docsPath)) {
+              result.constitution = parseConstitution(readMarkdown(docsPath));
+              break;
+            }
+          }
         }
       }
       if (file === "agents") {
         for (const agentFile of fs.readdirSync(fullPath)) {
-          const content = fs.readFileSync(path.join(fullPath, agentFile), "utf-8");
+          const content = readMarkdown(path.join(fullPath, agentFile));
           result.agents.push(parseAgentDefinition(content));
         }
       }
       if (file === "workflows") {
         for (const wfFile of fs.readdirSync(fullPath)) {
-          const content = fs.readFileSync(path.join(fullPath, wfFile), "utf-8");
+          const content = readMarkdown(path.join(fullPath, wfFile));
           result.workflows.push(parseWorkflow(content));
         }
       }
@@ -168,7 +193,7 @@ function parseSpecKitPackage(packageDir) {
       }
     } else if (file === "constitution.md") {
       if (!result.constitution) {
-        result.constitution = parseConstitution(fs.readFileSync(fullPath, "utf-8"));
+        result.constitution = parseConstitution(readMarkdown(fullPath));
       }
     }
   }
