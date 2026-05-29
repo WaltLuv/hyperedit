@@ -5,8 +5,8 @@ import AssetLibrary from '@/react-app/components/AssetLibrary';
 import ClipPropertiesPanel from '@/react-app/components/ClipPropertiesPanel';
 import CaptionPropertiesPanel from '@/react-app/components/CaptionPropertiesPanel';
 import AIPromptPanel from '@/react-app/components/AIPromptPanel';
-import PicassoPanel from '@/react-app/components/PicassoPanel';
-import DiCaprioPanel from '@/react-app/components/DiCaprioPanel';
+import WashingtonPanel from '@/react-app/components/WashingtonPanel';
+import ScorsesePanel from '@/react-app/components/ScorsesePanel';
 import GifSearchPanel from '@/react-app/components/GifSearchPanel';
 import ResizablePanel from '@/react-app/components/ResizablePanel';
 import ResizableVerticalPanel from '@/react-app/components/ResizableVerticalPanel';
@@ -33,7 +33,7 @@ export default function Home() {
   const [previewAssetId, setPreviewAssetId] = useState<string | null>(null);
   const [aspectRatio, setAspectRatio] = useState<'16:9' | '9:16'>('16:9');
   const [autoSnap, setAutoSnap] = useState(true); // Ripple delete mode - shift clips when deleting
-  const [activeAgent, setActiveAgent] = useState<'director' | 'picasso' | 'dicaprio'>('director');
+  const [activeAgent, setActiveAgent] = useState<'spielberg' | 'washington' | 'scorsese'>('spielberg');
   const [showGifSearch, setShowGifSearch] = useState(false);
 
   const videoPreviewRef = useRef<VideoPreviewHandle>(null);
@@ -1906,46 +1906,46 @@ export default function Home() {
           side="right"
         >
           <div className="h-full flex flex-col bg-zinc-900/80 backdrop-blur-sm">
-            {/* Agent Tabs — order: Director, DiCaprio, Picasso */}
+            {/* Agent Tabs — order: Spielberg, Scorsese, Washington */}
             <div className="flex items-center gap-1 px-2 border-b border-zinc-800/50">
               <button
-                onClick={() => setActiveAgent('director')}
+                onClick={() => setActiveAgent('spielberg')}
                 className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors ${
-                  activeAgent === 'director'
+                  activeAgent === 'spielberg'
                     ? 'text-zinc-200 border-b-2 border-zinc-300 bg-zinc-800/30'
                     : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/20'
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                Director
+                Spielberg
               </button>
               <button
-                onClick={() => setActiveAgent('dicaprio')}
+                onClick={() => setActiveAgent('scorsese')}
                 className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors ${
-                  activeAgent === 'dicaprio'
+                  activeAgent === 'scorsese'
                     ? 'text-zinc-200 border-b-2 border-zinc-300 bg-zinc-800/30'
                     : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/20'
                 }`}
               >
                 <Film className="w-3.5 h-3.5" />
-                DiCaprio
+                Scorsese
               </button>
               <button
-                onClick={() => setActiveAgent('picasso')}
+                onClick={() => setActiveAgent('washington')}
                 className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors ${
-                  activeAgent === 'picasso'
+                  activeAgent === 'washington'
                     ? 'text-zinc-200 border-b-2 border-zinc-300 bg-zinc-800/30'
                     : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/20'
                 }`}
               >
                 <Palette className="w-3.5 h-3.5" />
-                Picasso
+                Washington
               </button>
             </div>
 
             {/* AI Chat Panels - both mounted to preserve state, hidden via CSS */}
             <div className="flex-1 overflow-hidden relative">
-              <div className={`absolute inset-0 ${activeAgent === 'director' ? '' : 'hidden'}`}>
+              <div className={`absolute inset-0 ${activeAgent === 'spielberg' ? '' : 'hidden'}`}>
                 <AIPromptPanel
                   onApplyEdit={handleApplyEdit}
                   onExtractKeywordsAndAddGifs={handleExtractKeywordsAndAddGifs}
@@ -1978,8 +1978,8 @@ export default function Home() {
                   editTabClips={activeTabId !== 'main' ? timelineTabs.find(t => t.id === activeTabId)?.clips : undefined}
                 />
               </div>
-              <div className={`absolute inset-0 ${activeAgent === 'picasso' ? '' : 'hidden'}`}>
-                <PicassoPanel
+              <div className={`absolute inset-0 ${activeAgent === 'washington' ? '' : 'hidden'}`}>
+                <WashingtonPanel
                   sessionId={session?.sessionId ?? null}
                   onImageGenerated={(assetId) => {
                     console.log('Image generated:', assetId);
@@ -1987,8 +1987,8 @@ export default function Home() {
                   onRefreshAssets={refreshAssets}
                 />
               </div>
-              <div className={`absolute inset-0 ${activeAgent === 'dicaprio' ? '' : 'hidden'}`}>
-                <DiCaprioPanel
+              <div className={`absolute inset-0 ${activeAgent === 'scorsese' ? '' : 'hidden'}`}>
+                <ScorsesePanel
                   sessionId={session?.sessionId ?? null}
                   assets={assets}
                   onVideoGenerated={(assetId) => {

@@ -2,7 +2,7 @@
  * Spec Kit → HyperEdit Render Bridge
  *
  * Takes a SpecKit package directory, parses its markdown, generates
- * director commands, writes Remotion props JSON, and invokes the Remotion
+ * spielberg commands, writes Remotion props JSON, and invokes the Remotion
  * CLI to render a full 1080p video.
  *
  * Usage (called by local-ffmpeg-server.js):
@@ -11,7 +11,7 @@
  * Output:
  *   - <output-mp4-path> : final rendered video
  *   - <output-mp4-path>.props.json : Remotion props used (for re-render/edit)
- *   - <output-mp4-path>.commands.json : director commands (for reference)
+ *   - <output-mp4-path>.commands.json : spielberg commands (for reference)
  */
 
 const { spawn } = require("child_process");
@@ -200,7 +200,7 @@ function parseSpecKitPackage(packageDir) {
   return result;
 }
 
-// ─── Director Command Generator ──────────────────────────────────────────────
+// ─── Spielberg Command Generator ──────────────────────────────────────────────
 
 function generateDirectorCommands(parsed, options = {}) {
   const commands = [];
@@ -350,9 +350,9 @@ async function main() {
     hasSpec: !!parsed.spec,
   });
 
-  // Generate director commands
+  // Generate spielberg commands
   const commands = generateDirectorCommands(parsed, opts);
-  console.log(`[spec-kit-render] Generated ${commands.length} Director commands`);
+  console.log(`[spec-kit-render] Generated ${commands.length} Spielberg commands`);
 
   // Generate Remotion props
   const remotionProps = generateRemotionProps(commands, opts);

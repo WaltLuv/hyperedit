@@ -1,6 +1,6 @@
 /**
- * Spec Kit → HyperEdit Director Bridge
- * Parses Spec Kit package directories and generates HyperEdit Director commands.
+ * Spec Kit → HyperEdit Spielberg Bridge
+ * Parses Spec Kit package directories and generates HyperEdit Spielberg commands.
  *
  * Usage: node scripts/spec-kit-to-hyperedit.js <spec-kit-dir> [output-dir]
  */
@@ -168,7 +168,7 @@ function parseSpecKitPackage(packageDir) {
   return result;
 }
 
-// ─── Director Command Generator ──────────────────────────────────────────────
+// ─── Spielberg Command Generator ──────────────────────────────────────────────
 
 function generateDirectorCommands(parsed, outputDir) {
   const commands = [];
@@ -268,14 +268,14 @@ console.log("Found:", {
 });
 
 const commands = generateDirectorCommands(parsed);
-console.log("Generated", commands.length, "Director commands");
+console.log("Generated", commands.length, "Spielberg commands");
 commands.forEach((c, i) => {
   console.log(`  ${i + 1}. [${c.type}] → ${c.track} at ${c.startTime} (${c.duration}s)`);
 });
 
 fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(path.join(outDir, "director-commands.json"), JSON.stringify(commands, null, 2));
+fs.writeFileSync(path.join(outDir, "spielberg-commands.json"), JSON.stringify(commands, null, 2));
 fs.writeFileSync(path.join(outDir, "parsed-package.json"), JSON.stringify(parsed, null, 2));
 
-console.log("→ " + outDir + "/director-commands.json");
+console.log("→ " + outDir + "/spielberg-commands.json");
 console.log("→ " + outDir + "/parsed-package.json");

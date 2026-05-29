@@ -78,10 +78,10 @@ Key endpoints on `localhost:3333`:
 - `POST /session/{id}/edit-animation` - Modify existing Remotion source in-place (same asset ID reused after re-render)
 - `POST /session/{id}/process-asset` - Apply FFmpeg command to a specific asset (replaces in-place)
 - `POST /session/{id}/extract-audio` - Split video into muted video + audio on A1
-- `POST /session/{id}/generate-video` - Image-to-video via fal.ai (DiCaprio)
-- `POST /session/{id}/restyle-video` - Video-to-video style transfer (DiCaprio)
-- `POST /session/{id}/remove-video-bg` - Background removal (DiCaprio)
-- `POST /session/{id}/generate-image` - Picasso image generation
+- `POST /session/{id}/generate-video` - Image-to-video via fal.ai (Scorsese)
+- `POST /session/{id}/restyle-video` - Video-to-video style transfer (Scorsese)
+- `POST /session/{id}/remove-video-bg` - Background removal (Scorsese)
+- `POST /session/{id}/generate-image` - Washington image generation
 - `POST /session/{id}/giphy/*` - GIPHY search/trending/add proxy
 - `POST /session/{id}/create-gif` - Animated GIF from image with motion effects
 
@@ -111,7 +111,7 @@ Converts Spec Kit markdown packages (constitution, agent definitions, workflows)
 }
 ```
 
-**CLI entry point**: `scripts/spec-kit-render.cjs` — standalone parser + Remotion render. Parses constitution/agent/workflow markdown, generates director commands, writes props JSON, invokes `npx remotion render src/remotion/index.tsx SpecKitVideo`.
+**CLI entry point**: `scripts/spec-kit-render.cjs` — standalone parser + Remotion render. Parses constitution/agent/workflow markdown, generates spielberg commands, writes props JSON, invokes `npx remotion render src/remotion/index.tsx SpecKitVideo`.
 
 **Remotion component**: `SpecKitVideoGenerator` registered in `Root.tsx` as `id="SpecKitVideo"`.
 
@@ -138,16 +138,16 @@ When working on templates, use the `/remotion-best-practices` skill for domain-s
 
 Required in `.dev.vars` for local development:
 - `GEMINI_API_KEY` - Google AI for editing commands (worker uses `gemini-2.5-flash`)
-- `FAL_API_KEY` - fal.ai for Picasso/DiCaprio (note: server aliases this to `FAL_KEY` for the fal.ai SDK)
+- `FAL_API_KEY` - fal.ai for Washington/Scorsese (note: server aliases this to `FAL_KEY` for the fal.ai SDK)
 - `GIPHY_API_KEY` - GIF search
 - `OPENAI_API_KEY` - Additional AI features
 
 ## AI Agents
 
 The right panel has three AI agents accessible via tabs. All three panels are always mounted but toggled with `hidden` CSS class to preserve chat state.
-- **Director** (AIPromptPanel): Video editing commands, captions, motion graphics, animations
-- **Picasso** (PicassoPanel): Image generation using fal.ai nano-banana-pro model
-- **DiCaprio** (DiCaprioPanel): Video generation with Animate Image (Kling v1.5), Restyle Video (LTX-2 19B), Remove Background (Bria)
+- **Spielberg** (AIPromptPanel): Video editing commands, captions, motion graphics, animations
+- **Washington** (WashingtonPanel): Image generation using fal.ai nano-banana-pro model
+- **Scorsese** (ScorsesePanel): Video generation with Animate Image (Kling v1.5), Restyle Video (LTX-2 19B), Remove Background (Bria)
 
 ## UI Layout Conventions
 

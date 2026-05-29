@@ -1,14 +1,14 @@
 /**
- * Director Command → Remotion Scene Converter
+ * Spielberg Command → Remotion Scene Converter
  * 
- * Transforms Spec Kit bridge "director commands" into Remotion-compatible scene
+ * Transforms Spec Kit bridge "spielberg commands" into Remotion-compatible scene
  * objects that DynamicAnimation.tsx can render via npx remotion render.
  * 
  * Usage:
- *   node scripts/director-to-remotion.js <director-commands.json> <output-scenes.json>
+ *   node scripts/spielberg-to-remotion.js <spielberg-commands.json> <output-scenes.json>
  * 
- * Or programmatically (requires director-commands.json path as first arg):
- *   node scripts/director-to-remotion.js /path/to/director-commands.json
+ * Or programmatically (requires spielberg-commands.json path as first arg):
+ *   node scripts/spielberg-to-remotion.js /path/to/spielberg-commands.json
  */
 
 import fs from "fs";
@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
 
 const FPS = 30;
 
-// Scene type mappings: Director command type → Remotion scene type
+// Scene type mappings: Spielberg command type → Remotion scene type
 const TYPE_MAP = {
   title_card: "title",
   principle_card: "text",
@@ -30,7 +30,7 @@ const TYPE_MAP = {
 };
 
 /**
- * Convert a single director command to a Remotion scene
+ * Convert a single spielberg command to a Remotion scene
  */
 function commandToScene(cmd, index) {
   const remotionType = TYPE_MAP[cmd.type] || "title";
@@ -171,7 +171,7 @@ function commandToScene(cmd, index) {
 }
 
 /**
- * Convert entire director commands array to Remotion scenes
+ * Convert entire spielberg commands array to Remotion scenes
  */
 function convertToRemotionScenes(directorCommands) {
   const scenes = directorCommands.map((cmd, index) => commandToScene(cmd, index));
@@ -187,17 +187,17 @@ function convertToRemotionScenes(directorCommands) {
 const args = process.argv.slice(2);
 if (args.length < 1) {
   console.log(
-    "Usage: node scripts/director-to-remotion.js <director-commands.json> [output-scenes.json]"
+    "Usage: node scripts/spielberg-to-remotion.js <spielberg-commands.json> [output-scenes.json]"
   );
   process.exit(1);
 }
 
 const inputPath = path.resolve(args[0]);
 const outputPath = path.resolve(
-  args[1] || inputPath.replace("director-commands.json", "remotion-scenes.json")
+  args[1] || inputPath.replace("spielberg-commands.json", "remotion-scenes.json")
 );
 
-console.log("Reading director commands:", inputPath);
+console.log("Reading spielberg commands:", inputPath);
 const directorCommands = JSON.parse(fs.readFileSync(inputPath, "utf-8"));
 
 console.log("Converting", directorCommands.length, "commands to Remotion scenes...");

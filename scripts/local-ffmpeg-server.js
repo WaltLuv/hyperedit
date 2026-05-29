@@ -5262,7 +5262,7 @@ Return ONLY the complete JSON structure with your minimal change applied. No mar
   }
 }
 
-// Generate image using fal.ai nano-banana-pro model (Picasso agent)
+// Generate image using fal.ai nano-banana-pro model (Washington agent)
 async function handleGenerateImage(req, res, sessionId) {
   const session = getSession(sessionId);
   if (!session) {
@@ -5304,10 +5304,10 @@ async function handleGenerateImage(req, res, sessionId) {
     let enhancedPrompt = prompt;
     if (geminiApiKey) {
       try {
-        console.log(`[${jobId}] Enhancing prompt with Picasso AI...`);
+        console.log(`[${jobId}] Enhancing prompt with Washington AI...`);
         const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
-        const systemPrompt = `You are Picasso, an expert AI prompt engineer specializing in image generation. Your role is to transform simple user requests into detailed, visually compelling prompts that produce stunning images.
+        const systemPrompt = `You are Washington, an expert AI prompt engineer specializing in image generation. Your role is to transform simple user requests into detailed, visually compelling prompts that produce stunning images.
 
 ## Your Expertise
 - Deep knowledge of photography, cinematography, art styles, and visual composition
@@ -5424,7 +5424,7 @@ Enhanced: "Ancient moss-covered forest with towering redwood trees, ethereal mor
       const asset = {
         id: imageId,
         type: 'image',
-        filename: `picasso-${shortPrompt}.png`,
+        filename: `washington-${shortPrompt}.png`,
         path: imagePath,
         thumbPath: existsSync(thumbPath) ? thumbPath : null,
         duration: 5, // Default 5 seconds for images on timeline
@@ -5433,7 +5433,7 @@ Enhanced: "Ancient moss-covered forest with towering redwood trees, ethereal mor
         height: imageData.height || 1024,
         createdAt: Date.now(),
         aiGenerated: true,
-        generatedBy: 'picasso',
+        generatedBy: 'washington',
         prompt: prompt, // Original user prompt
         enhancedPrompt: enhancedPrompt !== prompt ? enhancedPrompt : undefined, // Enhanced prompt if different
       };
@@ -5468,7 +5468,7 @@ Enhanced: "Ancient moss-covered forest with towering redwood trees, ethereal mor
   }
 }
 
-// Generate video from image using fal.ai (DiCaprio agent)
+// Generate video from image using fal.ai (Scorsese agent)
 async function handleGenerateVideo(req, res, sessionId) {
   const session = getSession(sessionId);
   if (!session) {
@@ -5520,10 +5520,10 @@ async function handleGenerateVideo(req, res, sessionId) {
     let enhancedPrompt = prompt;
     if (geminiApiKey) {
       try {
-        console.log(`[${jobId}] Enhancing prompt with DiCaprio AI...`);
+        console.log(`[${jobId}] Enhancing prompt with Scorsese AI...`);
         const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
-        const systemPrompt = `You are DiCaprio, an expert AI prompt engineer specializing in image-to-video generation. Your role is to transform simple motion requests into detailed, cinematic prompts that produce stunning videos.
+        const systemPrompt = `You are Scorsese, an expert AI prompt engineer specializing in image-to-video generation. Your role is to transform simple motion requests into detailed, cinematic prompts that produce stunning videos.
 
 ## Your Expertise
 - Deep knowledge of cinematography, camera movements, and film techniques
@@ -5658,8 +5658,8 @@ Output: "Epic reveal shot with slow cinematic zoom out, camera gently pulling ba
     // Create asset entry
     const asset = {
       id: videoId,
-      filename: `dicaprio-${shortPrompt}.mp4`,
-      originalFilename: `dicaprio-${shortPrompt}.mp4`,
+      filename: `scorsese-${shortPrompt}.mp4`,
+      originalFilename: `scorsese-${shortPrompt}.mp4`,
       type: 'video',
       path: videoPath,
       thumbPath: existsSync(thumbPath) ? thumbPath : null,
@@ -5668,7 +5668,7 @@ Output: "Epic reveal shot with slow cinematic zoom out, camera gently pulling ba
       width: 1920,
       height: 1080,
       uploadedAt: Date.now(),
-      generatedBy: 'dicaprio',
+      generatedBy: 'scorsese',
       sourcePrompt: prompt,
       enhancedPrompt: enhancedPrompt,
       sourceImageId: imageAssetId,
@@ -5700,7 +5700,7 @@ Output: "Epic reveal shot with slow cinematic zoom out, camera gently pulling ba
   }
 }
 
-// Restyle video using LTX-2 video-to-video (DiCaprio agent)
+// Restyle video using LTX-2 video-to-video (Scorsese agent)
 async function handleRestyleVideo(req, res, sessionId) {
   const session = getSession(sessionId);
   if (!session) {
@@ -5899,7 +5899,7 @@ Return ONLY the enhanced prompt, no explanations.`
       width: falResult.video?.width || 1280,
       height: falResult.video?.height || 720,
       uploadedAt: Date.now(),
-      generatedBy: 'dicaprio-restyle',
+      generatedBy: 'scorsese-restyle',
       sourcePrompt: prompt,
       sourceVideoId: videoAssetId,
     };
@@ -5929,7 +5929,7 @@ Return ONLY the enhanced prompt, no explanations.`
   }
 }
 
-// Remove video background using Bria (DiCaprio agent)
+// Remove video background using Bria (Scorsese agent)
 async function handleRemoveVideoBg(req, res, sessionId) {
   const session = getSession(sessionId);
   if (!session) {
@@ -6079,7 +6079,7 @@ async function handleRemoveVideoBg(req, res, sessionId) {
       width: videoAsset.width || 1920,
       height: videoAsset.height || 1080,
       uploadedAt: Date.now(),
-      generatedBy: 'dicaprio-remove-bg',
+      generatedBy: 'scorsese-remove-bg',
       sourceVideoId: videoAssetId,
       hasTransparency: true,
     };
@@ -8092,7 +8092,7 @@ const server = http.createServer(async (req, res) => {
     else if (req.method === 'POST' && action === 'edit-animation') {
       await handleEditAnimation(req, res, sessionId);
     }
-    // Generate image with fal.ai (Picasso agent)
+    // Generate image with fal.ai (Washington agent)
     else if (req.method === 'POST' && action === 'generate-image') {
       await handleGenerateImage(req, res, sessionId);
     }
@@ -8108,15 +8108,15 @@ const server = http.createServer(async (req, res) => {
     else if (req.method === 'POST' && action === 'extract-audio') {
       await handleExtractAudio(req, res, sessionId);
     }
-    // Generate video from image (DiCaprio agent)
+    // Generate video from image (Scorsese agent)
     else if (req.method === 'POST' && action === 'generate-video') {
       await handleGenerateVideo(req, res, sessionId);
     }
-    // Restyle video with AI (DiCaprio agent - LTX-2)
+    // Restyle video with AI (Scorsese agent - LTX-2)
     else if (req.method === 'POST' && action === 'restyle-video') {
       await handleRestyleVideo(req, res, sessionId);
     }
-    // Remove video background (DiCaprio agent - Bria)
+    // Remove video background (Scorsese agent - Bria)
     else if (req.method === 'POST' && action === 'remove-video-bg') {
       await handleRemoveVideoBg(req, res, sessionId);
     }

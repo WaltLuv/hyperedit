@@ -18,7 +18,7 @@ interface ChatMessage {
   pendingPrompt?: string;
 }
 
-interface PicassoPanelProps {
+interface WashingtonPanelProps {
   sessionId: string | null;
   onImageGenerated?: (assetId: string) => void;
   onRefreshAssets?: () => void;
@@ -31,11 +31,11 @@ const QUICK_ACTIONS = [
   { icon: Sparkles, text: 'Create an abstract pattern' },
 ];
 
-export default function PicassoPanel({
+export default function WashingtonPanel({
   sessionId,
   onImageGenerated,
   onRefreshAssets,
-}: PicassoPanelProps) {
+}: WashingtonPanelProps) {
   const [prompt, setPrompt] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -201,7 +201,7 @@ export default function PicassoPanel({
           <div className="w-8 h-8 bg-gradient-to-br from-zinc-400 to-zinc-300 rounded-lg flex items-center justify-center">
             <Palette className="w-4 h-4" />
           </div>
-          <h2 className="font-semibold">Picasso</h2>
+          <h2 className="font-semibold">Washington</h2>
         </div>
         <p className="text-xs text-zinc-400">
           Describe the image you want to create
